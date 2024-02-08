@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/CsvProcessing/CsvProcessing.iml" filepath="$PROJECT_DIR$/CsvProcessing/CsvProcessing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DatabaseService/DatabaseService.iml" filepath="$PROJECT_DIR$/DatabaseService/DatabaseService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Eligibility/Eligibility.iml" filepath="$PROJECT_DIR$/Eligibility/Eligibility.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Natwest.iml" filepath="$PROJECT_DIR$/.idea/Natwest.iml" />
+    </modules>
+  </component>
+</project>
