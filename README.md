@@ -23,6 +23,8 @@ The project consists of the following microservices:
 2. **Check Eligibility:** Invoke the eligibility check API to determine the eligibility of students based on predefined criteria.
 3. **View Results:** Access the database to view the processed student data and their eligibility status.
 
+![Swagger Screenshot](Images/swagger.png)
+
 ## CSV Data
 Here, there are 3 sample CSV files attached with project, each containing 2000 records of student data. Ensure that the CSV files adhere to the expected format for successful processing.
 
