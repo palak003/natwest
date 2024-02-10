@@ -3,13 +3,8 @@ package com.example.CsvProcessing.Service;
 import com.example.CsvProcessing.Clients.DatabaseServiceClient;
 import com.example.CsvProcessing.Clients.EligibilityServiceClient;
 import com.example.CsvProcessing.Models.EligibilityCriteria;
+import com.example.CsvProcessing.Models.Student;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
@@ -62,31 +57,58 @@ public class CsvProcessingService {
 
     private File processCsvFile(MultipartFile file) throws IOException {
         File updatedCsvFile = File.createTempFile("updated_file", ".csv");
+        int BATCH_SIZE = 500; // adjust as necessary
         try (
                 BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
                 BufferedWriter writer = new BufferedWriter(new FileWriter(updatedCsvFile));
         ) {
             String line;
-            synchronized (this) {
+            List<String[]> batch = new ArrayList<>();
+
                 while ((line = reader.readLine()) != null) {
                     String[] studentData = line.split(",");
-                    Long rollNumber = Long.parseLong(studentData[0]);
-                    boolean isEligible = eligibilityServiceClient.checkEligibility(studentData);
-                    databaseServiceClient.saveOrUpdateStudent(rollNumber, isEligible);
-                    line += "," + (isEligible ? "YES" : "NO");
-                    writer.write(line);
-                    writer.newLine();
+                    batch.add(studentData);
+                    if (batch.size() == BATCH_SIZE) {
+                        processBatch(batch, writer);
+                        batch.clear();
+                    }
                 }
-            }
-        }
+                if (!batch.isEmpty()) {
+                    processBatch(batch, writer);
+                    batch.clear();
+                }
 
+        }
         return updatedCsvFile;
+    }
+
+    private void processBatch(List<String[]> batch, BufferedWriter writer) throws IOException {
+        List<Boolean> eligibilityResults = new ArrayList<>();
+        List<Student> students = new ArrayList<>();
+        for (String[] studentData : batch) {
+            Long rollNumber = Long.parseLong(studentData[0]);
+            boolean isEligible = eligibilityServiceClient.checkEligibility(studentData);
+            Student student=new Student();
+            student.setEligible(isEligible);
+            student.setRollNumber(rollNumber);
+            students.add(student);
+            eligibilityResults.add(isEligible);
+        }
+        databaseServiceClient.saveOrUpdateStudents(students);
+        for (int i = 0; i < batch.size(); i++) {
+            String[] studentData = batch.get(i);
+            boolean isEligible = eligibilityResults.get(i);
+            String line = String.join(",", studentData) + "," + (isEligible ? "YES" : "NO");
+            writer.write(line);
+            writer.newLine();
+        }
     }
 
     private void addToZipFile(File file, ZipOutputStream zos) throws IOException {
         FileInputStream fis = new FileInputStream(file);
         byte[] buffer = new byte[1024];
         int bytesRead;
+        String fileName = "updated_files_"+ ".csv";
         zos.putNextEntry(new ZipEntry(file.getName()));
         while ((bytesRead = fis.read(buffer)) != -1) {
             zos.write(buffer, 0, bytesRead);

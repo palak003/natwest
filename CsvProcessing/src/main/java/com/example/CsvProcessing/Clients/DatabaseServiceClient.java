@@ -1,17 +1,21 @@
 package com.example.CsvProcessing.Clients;
 
+import com.example.CsvProcessing.Models.Student;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @FeignClient(value = "DATABASE-SERVICE", url = "http://localhost:8081")
 public interface DatabaseServiceClient {
 
-    @PostMapping("/students")
-    void saveOrUpdateStudent(@RequestParam("rollNumber") Long rollNumber, @RequestParam("isEligible") boolean isEligible);
 
     @GetMapping("/check/{rollNumber}")
     String checkEligibility(@PathVariable Long rollNumber);
+
+
+    @PostMapping("/students")
+    void saveOrUpdateStudents(List<Student> students);
 }

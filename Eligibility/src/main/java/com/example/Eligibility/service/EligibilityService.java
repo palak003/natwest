@@ -17,7 +17,10 @@ public class EligibilityService {
         int mathsMarks = Integer.parseInt(studentData[3]);
         int englishMarks = Integer.parseInt(studentData[4]);
         int computerMarks = Integer.parseInt(studentData[5]);
-        Eligibility existingCriteria = eligibilityRepository.findAll().stream().findFirst().orElse(getDefaultEligibilityCriteria());
+        Eligibility existingCriteria= getDefaultEligibilityCriteria();
+        var existingCriterias=eligibilityRepository.findAll();
+        if(existingCriterias.size()>0)
+           existingCriteria=existingCriterias.get(0);
         return (scienceMarks > existingCriteria.getScienceMarks() &&
                 mathsMarks > existingCriteria.getMathsMarks() &&
                 computerMarks > existingCriteria.getComputerMarks() &&

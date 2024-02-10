@@ -4,28 +4,15 @@ import com.example.DatabaseService.Entity.Student;
 import com.example.DatabaseService.Repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
-
-    @Transactional
-    public void saveOrUpdateStudent(Long rollNumber, boolean isEligible) {
-        Student existingStudent = studentRepository.findByRollNumber(rollNumber);
-        if (existingStudent == null) {
-            Student newStudent = Student.builder()
-                    .rollNumber(rollNumber)
-                    .eligible(isEligible)
-                    .build();
-            studentRepository.save(newStudent);
-        } else {
-            existingStudent.setEligible(isEligible);
-            studentRepository.save(existingStudent);
-        }
-    }
+    
+    
 
     public String checkEligibility(Long rollNumber) {
         Student student = studentRepository.findByRollNumber(rollNumber);
@@ -35,4 +22,10 @@ public class StudentService {
             return "Not Applicable";
         }
     }
+
+    public void saveOrUpdateStudent(List<Student> students) {
+        studentRepository.saveAll(students);
+    }
+
+
 }
