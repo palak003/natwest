@@ -57,7 +57,7 @@ public class CsvProcessingService {
 
     private File processCsvFile(MultipartFile file) throws IOException {
         File updatedCsvFile = File.createTempFile("updated_file", ".csv");
-        int BATCH_SIZE = 500; // adjust as necessary
+        int BATCH_SIZE = 500;
         try (
                 BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
                 BufferedWriter writer = new BufferedWriter(new FileWriter(updatedCsvFile));

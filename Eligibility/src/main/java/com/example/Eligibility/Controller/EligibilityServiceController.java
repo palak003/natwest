@@ -1,6 +1,5 @@
 package com.example.Eligibility.Controller;
 
-import com.example.Eligibility.Entity.Eligibility;
 import com.example.Eligibility.Models.EligibilityCriteria;
 import com.example.Eligibility.service.EligibilityService;
 import org.springframework.beans.factory.annotation.Autowired;
