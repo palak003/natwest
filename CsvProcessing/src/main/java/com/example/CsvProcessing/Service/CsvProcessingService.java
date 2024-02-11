@@ -4,6 +4,8 @@ import com.example.CsvProcessing.Clients.DatabaseServiceClient;
 import com.example.CsvProcessing.Clients.EligibilityServiceClient;
 import com.example.CsvProcessing.Models.EligibilityCriteria;
 import com.example.CsvProcessing.Models.Student;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,12 +17,14 @@ import java.util.concurrent.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+
 @Service
 public class CsvProcessingService {
 
     @Autowired
     private EligibilityServiceClient eligibilityServiceClient;
 
+    private static final Logger logger = LoggerFactory.getLogger(CsvProcessingService.class);
     @Autowired
     private DatabaseServiceClient databaseServiceClient;
 
@@ -38,8 +42,9 @@ public class CsvProcessingService {
             ExecutorService executorService = Executors.newFixedThreadPool(files.size());
             List<Future<File>> futures = new ArrayList<>();
 
-            for (MultipartFile file : files) {
-                Callable<File> task = () -> processCsvFile(file);
+            for (int i = 0; i < files.size(); i++){
+                final int fileIndex = i;
+                Callable<File> task = () -> processCsvFile(files.get(fileIndex), fileIndex);
                 futures.add(executorService.submit(task));
             }
 
@@ -55,7 +60,8 @@ public class CsvProcessingService {
         return baos.toByteArray();
     }
 
-    private File processCsvFile(MultipartFile file) throws IOException {
+    private File processCsvFile(MultipartFile file,int fileIndex) throws IOException {
+        logger.info("Processing file {}", fileIndex);
         File updatedCsvFile = File.createTempFile("updated_file", ".csv");
         int BATCH_SIZE = 500;
         try (
@@ -64,20 +70,22 @@ public class CsvProcessingService {
         ) {
             String line;
             List<String[]> batch = new ArrayList<>();
-
+            int batchNumber = 0;
                 while ((line = reader.readLine()) != null) {
                     String[] studentData = line.split(",");
                     batch.add(studentData);
                     if (batch.size() == BATCH_SIZE) {
                         processBatch(batch, writer);
+                        logger.info("Batch {} processed for file {}.", batchNumber, fileIndex);
                         batch.clear();
+                        batchNumber++;
                     }
                 }
                 if (!batch.isEmpty()) {
                     processBatch(batch, writer);
                     batch.clear();
                 }
-
+            logger.info("File {} processed.", fileIndex);
         }
         return updatedCsvFile;
     }
