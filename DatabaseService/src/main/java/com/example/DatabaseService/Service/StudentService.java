@@ -11,8 +11,11 @@ public class StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
-    
-    
+
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository=studentRepository;
+    }
+
 
     public String checkEligibility(Long rollNumber) {
         Student student = studentRepository.findByRollNumber(rollNumber);
