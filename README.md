@@ -3,11 +3,12 @@
 ---
 
 ## Overview
-This project is a CSV processing application built using Spring Boot. It processes CSV files containing student data, checks their eligibility based on predefined criteria, and stores the results in a database. The application utilizes microservices architecture, multithreading, and Swagger for documentation.
+This project is a CSV processing application built using Spring Boot. It processes CSV files containing student data, checks their eligibility fetched from cache, and stores the results in a database. The application utilizes microservices architecture,and Swagger for documentation.To boost speed of application batch processing and multithreading has been implemented.
+Microservices communication has been managed using open-feign client.
 
 ## Features
 - **CSV Processing:** Upload CSV files containing student data for processing.
-- **Eligibility Check:** Check eligibility of students based on predefined criteria such as marks in specific subjects.
+- **Eligibility Check:** Check eligibility of students based on predefined criteria such as marks in specific subjects, and can be managed dynamically.
 - **Database Storage:** Store the processed data in a database.
 - **Multithreading:** Process multiple CSV files simultaneously using multithreading for improved performance.
 - **Swagger Documentation:** Explore and test the APIs using Swagger UI.
@@ -20,10 +21,12 @@ The project consists of the following microservices:
 
 ## Usage
 1. **Upload CSV Files:** Use the provided endpoints to upload CSV files containing student data.
-2. **Check Eligibility:** Invoke the eligibility check API to determine the eligibility of students based on predefined criteria.
+2. **Check Eligibility:** Invoke the eligibility check API to determine the eligibility of students based on predefined criteria from cache, and criteria can be dynamically changed as well.
 3. **View Results:** Access the database to view the processed student data and their eligibility status.
 
 ![Swagger Screenshot](Images/swagger.png)
+![Architecture](Images/ArchitectureDiagram.png)
+
 
 ## CSV Data
 Here, there are 3 sample CSV files attached with project, each containing 2000 records of student data. Ensure that the CSV files adhere to the expected format for successful processing.
